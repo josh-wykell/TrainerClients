@@ -33,6 +33,12 @@ public class CustomerFragment extends Fragment {
         mCustomer = CustomerCenter.get(getActivity()).getCustomer(customerId);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        CustomerCenter.get(getActivity()).updateCustomer(mCustomer);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

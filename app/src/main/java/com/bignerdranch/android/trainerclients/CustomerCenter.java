@@ -1,6 +1,12 @@
 package com.bignerdranch.android.trainerclients;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.bignerdranch.android.trainerclients.database.CustomerBaseHelper;
+import com.bignerdranch.android.trainerclients.database.CustomerDbSchema;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +19,8 @@ import java.util.UUID;
 public class CustomerCenter {
     private static CustomerCenter sCustomerCenter;
 
-    private List<Customer> mCustomers;
+    private Context mContext;
+    private SQLiteDatabase mDatabase;
 
     public static CustomerCenter get(Context context) {
 
@@ -24,31 +31,52 @@ public class CustomerCenter {
     }
 
     private CustomerCenter(Context context) {
-        mCustomers = new ArrayList<>();
-//        for (int i = 0; i < 50; i ++) {
-//            Customer customer = new Customer();
-//            customer.setName("Customer " + i);
-//            customer.setPhone((int)((Math.random() * 9000000) + 1000000));
-//            customer.setEmail("customer" + i + "@gmail.com");
-//            customer.setAddress((Integer.toString(((int)((Math.random() * 9000) + 1000)))) + "Central Ave.");
-//            mCustomers.add(customer);
-//        }
+        mContext = context.getApplicationContext();
+        mDatabase = new CustomerBaseHelper(mContext).getWritableDatabase();
     }
 
     public void addCustomer(Customer c) {
-        mCustomers.add(c);
+        ContentValues values = getContentValues(c);
+        mDatabase.insert(CustomerDbSchema.CustomerTable.NAME, null, values);
     }
 
     public List<Customer> getCustomers() {
-        return mCustomers;
+
+        return new ArrayList<>();
     }
 
     public Customer getCustomer(UUID id) {
-        for (Customer customer : mCustomers) {
-            if (customer.getId().equals(id)) {
-                return customer;
-            }
-        }
         return null;
+    }
+
+    public void updateCustomer(Customer customer) {
+
+        String uuidString = customer.getId().toString();
+        ContentValues values = getContentValues(customer);
+        mDatabase.update(CustomerDbSchema.CustomerTable.NAME, values, CustomerDbSchema.CustomerTable.Cols.UUID + " = ?",
+                new String[] {uuidString});
+    }
+
+    private Cursor queryCustomers(String whereClause, String[] whereArgs) {
+        Cursor cursor = mDatabase.query(
+                CustomerDbSchema.CustomerTable.NAME,
+                null, // columns - null selects all columns
+                whereClause,
+                whereArgs,
+                null,// groupBy
+                null, //having
+                null // orderBy
+        );
+        return cursor;
+    }
+
+    private static ContentValues getContentValues(Customer customer) {
+        ContentValues values = new ContentValues();
+        values.put(CustomerDbSchema.CustomerTable.Cols.UUID, customer.getId().toString());
+        values.put(CustomerDbSchema.CustomerTable.Cols.CUSTOMERNAME, customer.getName());
+        values.put(CustomerDbSchema.CustomerTable.Cols.EMAIL, customer.getEmail());
+        values.put(CustomerDbSchema.CustomerTable.Cols.PHONE, Integer.toString(customer.getPhone()));
+        values.put(CustomerDbSchema.CustomerTable.Cols.ADDRESS, customer.getAddress());
+        return values;
     }
 }
