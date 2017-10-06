@@ -16,8 +16,11 @@ public class Customer {
     private File mImage;
 
     public Customer() {
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
+    }
 
+    public Customer(UUID id) {
+        mId = id;
     }
 
     public UUID getId() {

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.bignerdranch.android.trainerclients.database.CustomerBaseHelper;
+import com.bignerdranch.android.trainerclients.database.CustomerCursorWrapper;
 import com.bignerdranch.android.trainerclients.database.CustomerDbSchema;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class CustomerCenter {
                 new String[] {uuidString});
     }
 
-    private Cursor queryCustomers(String whereClause, String[] whereArgs) {
+    private CustomerCursorWrapper queryCustomers(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 CustomerDbSchema.CustomerTable.NAME,
                 null, // columns - null selects all columns
@@ -67,7 +68,7 @@ public class CustomerCenter {
                 null, //having
                 null // orderBy
         );
-        return cursor;
+        return new CustomerCursorWrapper(cursor);
     }
 
     private static ContentValues getContentValues(Customer customer) {
