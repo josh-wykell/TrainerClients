@@ -21,7 +21,12 @@ public class CustomerBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate (SQLiteDatabase db){
-        db.execSQL(" create table " + CustomerTable.NAME + "(" + " _id integer primary key autoincrement, " + CustomerTable.Cols.UUID + ", " + CustomerTable.Cols.CUSTOMERNAME + ", " + CustomerTable.Cols.EMAIL +", " + CustomerTable.Cols.ADDRESS +", " + CustomerTable.Cols.PHONE +")");
+        db.execSQL(" create table " + CustomerTable.NAME + "(" + " _id integer primary key autoincrement, " +
+                CustomerTable.Cols.UUID + ", " +
+                CustomerTable.Cols.CUSTOMERNAME + ", " +
+                CustomerTable.Cols.EMAIL +", " +
+                CustomerTable.Cols.ADDRESS +", " +
+                CustomerTable.Cols.PHONE +")");
     }
 
     @Override

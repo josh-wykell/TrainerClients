@@ -43,11 +43,37 @@ public class CustomerCenter {
 
     public List<Customer> getCustomers() {
 
-        return new ArrayList<>();
+        List<Customer> customers = new ArrayList<>();
+
+        CustomerCursorWrapper cursor = queryCustomers(null, null);
+
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                customers.add(cursor.getCustomer());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return customers;
     }
 
     public Customer getCustomer(UUID id) {
-        return null;
+        CustomerCursorWrapper cursor = queryCustomers(CustomerDbSchema.CustomerTable.Cols.UUID + " = ?",
+                new String[] {id.toString()});
+
+        try {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+
+            cursor.moveToFirst();
+            return cursor.getCustomer();
+        } finally {
+            cursor.close();
+        }
     }
 
     public void updateCustomer(Customer customer) {
